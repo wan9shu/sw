@@ -2,19 +2,26 @@
 
 const {gitConfig} = require ('../config');
 const {exec} = require ('../util');
-const [, , ...argvs] = process.argv;
 
-(async function () {
-  if (argvs[0] == 'git') {
-    if (argvs[1] == 'config') {
-      if (argvs[2] == 'log') {
-        await log ();
-      } else if (argvs[2]) {
-        await config (argvs[2]);
+const {program} = require ('commander');
+program.version ('0.0.1');
+
+program
+  .command ('gc [name]')
+  .option ('-l,--log')
+  .action (async function (name) {
+    if (this.opts ().log) {
+      if (name) {
+        await config (name);
       }
+      await log ();
+    } else if (name) {
+      await config (name);
     }
-  }
-}) ();
+  });
+
+program.parse (process.argv);
+
 async function log () {
   try {
     const {stdout} = await exec (
@@ -32,6 +39,7 @@ async function log () {
 }
 async function config (name) {
   const email = gitConfig[name];
+  console.log (name);
   try {
     await exec (
       [
