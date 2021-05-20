@@ -39,7 +39,6 @@ async function log () {
 }
 async function config (name) {
   const email = gitConfig[name];
-  console.log (name);
   try {
     await exec (
       [
